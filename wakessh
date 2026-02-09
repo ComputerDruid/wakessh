@@ -1,0 +1,3 @@
+#!/usr/bin/env fish
+cd "$(status dirname)"
+strace -rT --output=strace.log ./target/release/wakessh $argv
