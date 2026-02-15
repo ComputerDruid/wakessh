@@ -32,7 +32,7 @@ async fn connect(args: &Args) -> TcpStream {
             panic!("failed to ssh to jump host");
         }
         // wait a bit for the computer to resume from suspend
-        tokio::time::sleep(Duration::from_secs(7)).await;
+        tokio::time::sleep(Duration::from_secs(10)).await;
         let connection = happy_eyeballs::tokio::connect((host, port)).await?;
 
         Ok(connection)
