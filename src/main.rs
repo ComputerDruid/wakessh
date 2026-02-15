@@ -1,16 +1,17 @@
 use std::{
     io::IoSlice,
-    mem::{ManuallyDrop, MaybeUninit},
+    mem::MaybeUninit,
     net::TcpStream,
-    os::fd::{AsFd, AsRawFd, FromRawFd, OwnedFd},
+    os::fd::AsFd,
     time::Duration,
 };
 
 use clap::Parser;
 use futures_concurrency::future::RaceOk;
 use rustix::{
-    io::{dup2, fcntl_dupfd_cloexec},
+    io::fcntl_dupfd_cloexec,
     net::{SendAncillaryBuffer, SendAncillaryMessage, SendFlags, sendmsg},
+    stdio::dup2_stdout,
 };
 use tokio::process::Command;
 
@@ -51,10 +52,7 @@ async fn connect(args: &Args) -> TcpStream {
 }
 
 fn redirect_stdout_to_stderr() {
-    let mut stdout =
-        ManuallyDrop::new(unsafe { OwnedFd::from_raw_fd(std::io::stdout().as_raw_fd()) });
-
-    dup2(std::io::stderr(), &mut stdout).expect("redirecting stdout to stderr");
+    dup2_stdout(std::io::stderr()).unwrap();
 }
 
 #[derive(Parser, Debug)]
